@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelinlik</title>
-    <title>Özel dikim gelinlik</title>
-    <title>abiye</title>
-    <title>kiralık gelinlik</title>
-    <title>satılık gelinlik</title>
-    <title>satılık abiye</title>
-    <title>gelinlik modelleri</title>
+    <title>Ayeli Couture | Haute Couture & Bridal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -34,505 +28,357 @@
     </script>
 
     <style>
-        :root {
-            --gold: #b8924e;
-            --dark: #0f0f0f;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fff;
-            color: var(--dark);
-        }
-        h1, h2, h3, .luxury-font {
-            font-family: 'Playfair Display', serif;
-        }
-        .text-gold { color: var(--gold); }
-        .bg-gold { background-color: var(--gold); }
+        :root { --gold: #b8924e; --dark: #121212; }
+        body { font-family: 'Inter', sans-serif; background-color: #fff; color: var(--dark); overflow-x: hidden; }
+        h1, h2, h3, .luxury-font { font-family: 'Playfair Display', serif; }
         
-        /* Modal Style */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        
-        /* MOBİL FIX: Kapatma Butonu Stili - Artık resmin altında kalmayacak */
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 99999; /* Çok yüksek z-index */
-            background-color: #fff;
-            color: #000;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .close-btn:hover {
-            color: var(--gold);
-            transform: scale(1.1);
-        }
+        /* Modal Responsive */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 10000; align-items: center; justify-content: center; padding: 10px; }
+        .modal-content { background: white; width: 100%; max-width: 1150px; max-height: 95vh; position: relative; display: flex; flex-direction: column; overflow-y: auto; border: 1px solid #eee; }
+        @media (min-width: 768px) { .modal-content { flex-direction: row; overflow: hidden; } }
+
+        /* Hamburger Animasyonu */
+        .menu-icon { width: 30px; height: 20px; position: relative; cursor: pointer; z-index: 101; }
+        .menu-icon span { display: block; position: absolute; height: 1.5px; width: 100%; background: #000; transition: .3s ease-in-out; }
+        .menu-icon span:nth-child(1) { top: 0px; }
+        .menu-icon span:nth-child(2) { top: 10px; }
+        .menu-icon span:nth-child(3) { top: 20px; }
+        .menu-icon.open span:nth-child(1) { top: 10px; transform: rotate(135deg); }
+        .menu-icon.open span:nth-child(2) { opacity: 0; left: -60px; }
+        .menu-icon.open span:nth-child(3) { top: 10px; transform: rotate(-135deg); }
 
         .page-section { display: none; }
-        .page-active { display: block; animation: fadeIn 0.8s ease-in-out; }
+        .page-active { display: block; animation: fadeIn 1s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Admin Styles */
+        .admin-trigger { cursor: pointer; opacity: 0.05; padding: 0 5px; }
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: #000; color: white; width: 32px; height: 32px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 50; }
+        .admin-mode .delete-btn { display: flex !important; }
 
-        .nav-link {
-            font-size: 0.75rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            font-weight: 600;
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0; height: 1px;
-            bottom: -5px; left: 0;
-            background-color: var(--gold);
-            transition: width 0.3s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
-
-        .hero-gradient {
-            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
-        }
-
-        .admin-dot {
-            cursor: pointer;
-            opacity: 0.5;
-            user-select: none;
-        }
-        
-        /* Product Card Admin Badge */
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4d4d;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            cursor: pointer;
-        }
-        .admin-mode .delete-btn { display: flex; }
-
-        #mobileMenu {
-            transition: transform 0.4s ease-in-out;
-            transform: translateX(100%);
-        }
-        #mobileMenu.active { transform: translateX(0); }
+        .custom-scrollbar::-webkit-scrollbar { height: 3px; width: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--gold); }
     </style>
 </head>
 <body>
 
-    <nav class="fixed w-full z-[100] bg-white border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="text-2xl font-bold tracking-[0.2em] luxury-font cursor-pointer" onclick="navigateTo('home')">
+    <nav class="fixed w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+            <div class="text-xl font-bold tracking-[0.3em] luxury-font cursor-pointer" onclick="navigateTo('home')">
                 AYELİ <span class="text-gold font-light">COUTURE</span>
             </div>
             
             <div class="hidden md:flex space-x-12">
-                <a href="javascript:void(0)" onclick="navigateTo('home')" class="nav-link">Anasayfa</a>
-                <a href="javascript:void(0)" onclick="navigateTo('koleksiyon')" class="nav-link">Koleksiyon</a>
-                <a href="javascript:void(0)" onclick="navigateTo('iletisim')" class="nav-link">İletişim</a>
+                <a href="javascript:void(0)" onclick="navigateTo('home')" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Anasayfa</a>
+                <a href="javascript:void(0)" onclick="navigateTo('koleksiyon')" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Koleksiyon</a>
+                <a href="javascript:void(0)" onclick="navigateTo('iletisim')" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">İletişim</a>
             </div>
 
-            <button id="menuBtn" class="md:hidden text-2xl text-gold">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="md:hidden" onclick="toggleMenu()">
+                <div id="navIcon" class="menu-icon">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div id="mobileMenu" class="fixed inset-0 bg-white z-[110] flex flex-col items-center justify-center space-y-8 md:hidden">
-        <button onclick="toggleMenu()" class="absolute top-8 right-8 text-3xl">&times;</button>
-        <a href="javascript:void(0)" onclick="navigateTo('home')" class="text-2xl luxury-font tracking-widest">ANASAYFA</a>
-        <a href="javascript:void(0)" onclick="navigateTo('koleksiyon')" class="text-2xl luxury-font tracking-widest">KOLEKSİYON</a>
-        <a href="javascript:void(0)" onclick="navigateTo('iletisim')" class="text-2xl luxury-font tracking-widest">İLETİŞİM</a>
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[90] flex flex-col items-center justify-center space-y-12 transition-transform duration-700 translate-x-full md:hidden">
+        <a href="javascript:void(0)" onclick="navigateTo('home')" class="text-2xl luxury-font tracking-[0.2em]">ANASAYFA</a>
+        <a href="javascript:void(0)" onclick="navigateTo('koleksiyon')" class="text-2xl luxury-font tracking-[0.2em]">KOLEKSİYON</a>
+        <a href="javascript:void(0)" onclick="navigateTo('iletisim')" class="text-2xl luxury-font tracking-[0.2em]">İLETİŞİM</a>
+        <div class="flex space-x-8 text-gold text-xl">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/905366614017"><i class="fab fa-whatsapp"></i></a>
+        </div>
     </div>
 
     <main id="page-home" class="page-section page-active">
-        <section class="relative h-screen flex items-center pt-20">
-            <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1594553429748-0283cdd82117?auto=format&fit=crop&w=1950&q=80" class="w-full h-full object-cover">
-                <div class="absolute inset-0 hero-gradient"></div>
-            </div>
-            <div class="relative z-10 max-w-7xl mx-auto px-6 w-full text-white">
-                <div class="max-w-2xl">
-                    <h4 class="text-gold uppercase tracking-[0.4em] text-sm font-semibold mb-6">Özel Tasarım Atölyesi</h4>
-                    <h1 class="text-6xl md:text-8xl luxury-font leading-tight mb-8">Hayallerinizi <br><span class="italic font-light">Tasarlıyoruz.</span></h1>
-                    <p class="text-lg text-gray-300 mb-12 font-light leading-relaxed">İstanbul'un kalbinde, her dikişi özenle işlenmiş eşsiz gelinlik modelleriyle hayatınızın en özel gününe hazırlanmanıza eşlik ediyoruz.</p>
-                    <div class="flex flex-col sm:flex-row gap-6">
-                        <button onclick="navigateTo('koleksiyon')" class="bg-gold text-white px-12 py-5 text-xs font-bold tracking-[0.2em] hover:bg-white hover:text-black transition duration-500 uppercase">Koleksiyonu Keşfet</button>
-                        <button onclick="navigateTo('iletisim')" class="border border-white/40 text-white px-12 py-5 text-xs font-bold tracking-[0.2em] hover:bg-white hover:text-black transition duration-500 uppercase">Randevu Al</button>
-                    </div>
+        <section class="min-h-screen flex items-center bg-white pt-24 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative z-10 text-center md:text-left">
+                    <h4 class="text-gold uppercase tracking-[0.4em] text-[10px] font-bold mb-6">Haute Couture & Bridal</h4>
+                    <h1 class="text-6xl md:text-8xl luxury-font mb-10 leading-[1.1] text-black">Zarafet <br><span class="italic font-light">Sizinle Başlar.</span></h1>
+                    <p class="text-gray-400 font-light text-sm max-w-sm mb-12 leading-relaxed">İstanbul'un kalbinde, her dikişinde bir hikaye barındıran tamamen size özel tasarımlar.</p>
+                    <button onclick="navigateTo('koleksiyon')" class="bg-black text-white px-12 py-5 text-[10px] font-bold tracking-widest uppercase hover:bg-gold transition duration-500 shadow-2xl">Koleksiyonu Keşfet</button>
+                </div>
+                <div class="relative h-[60vh] md:h-[80vh] w-full">
+                    <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49.jpeg" class="w-full h-full object-cover rounded-sm shadow-sm grayscale-[0.2] hover:grayscale-0 transition duration-1000">
                 </div>
             </div>
         </section>
-
-        <section class="py-24 bg-white">
-            <div class="max-w-5xl mx-auto px-6 text-center">
-                <span class="text-gold text-4xl mb-4 inline-block">✧</span>
-                <h2 class="text-4xl luxury-font mb-8">Zarafetin ve Lüksün Buluşma Noktası</h2>
-                <p class="text-gray-500 leading-loose text-lg font-light">Ümraniye'deki butiğimizde, dünya trendlerini geleneksel el işçiliği ile birleştiriyoruz. Size sadece bir gelinlik değil, bir sanat eseri sunuyoruz.</p>
+        
+        <section class="py-32 bg-white px-6">
+            <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+                <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49%20(1).jpeg" class="aspect-[3/4] object-cover w-full">
+                <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49%20(2).jpeg" class="aspect-[3/4] object-cover w-full md:mt-20">
+                <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49.jpeg" class="aspect-[3/4] object-cover w-full">
+                <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/b.jpeg" class="aspect-[3/4] object-cover w-full md:mt-20">
             </div>
         </section>
     </main>
 
-    <main id="page-koleksiyon" class="page-section pt-32 pb-24 bg-gray-50">
+    <main id="page-koleksiyon" class="page-section pt-40 pb-32 bg-white">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-5xl luxury-font italic mb-4">Gelinlik Koleksiyonu</h2>
-                <div class="w-24 h-px bg-gold mx-auto mb-10"></div>
-                <div class="flex justify-center gap-6">
-                    <button onclick="filterItems('all')" class="filter-btn text-xs font-bold tracking-widest uppercase pb-2 border-b-2 border-gold">Hepsi</button>
-                    <button onclick="filterItems('satilik')" class="filter-btn text-xs font-bold tracking-widest uppercase pb-2 border-b-2 border-transparent text-gray-400 hover:text-gold">Satılık</button>
-                    <button onclick="filterItems('kiralik')" class="filter-btn text-xs font-bold tracking-widest uppercase pb-2 border-b-2 border-transparent text-gray-400 hover:text-gold">Kiralık</button>
+            <div class="text-center mb-24">
+                <h2 class="text-5xl luxury-font italic">Tasarımlarımız</h2>
+                <div class="flex justify-center gap-8 mt-12">
+                    <button onclick="filterItems('all')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-gold pb-2">Hepsi</button>
+                    <button onclick="filterItems('satilik')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-transparent text-gray-300 hover:text-black pb-2">Satılık</button>
+                    <button onclick="filterItems('kiralik')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-transparent text-gray-300 hover:text-black pb-2">Kiralık</button>
                 </div>
             </div>
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16"></div>
             
-            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                </div>
-
-            <div id="adminControls" class="hidden mt-20 text-center">
-                <button onclick="openAddModal()" class="bg-black text-white px-12 py-5 text-xs font-bold tracking-widest hover:bg-gold transition uppercase shadow-xl">Yeni Model Ekle</button>
+            <div id="adminControls" class="hidden mt-24 text-center">
+                <button onclick="openModal('addModal')" class="bg-black text-white px-12 py-5 text-[10px] font-bold tracking-widest uppercase hover:bg-gold transition">YENİ MODEL EKLE</button>
             </div>
         </div>
     </main>
 
-    <main id="page-iletisim" class="page-section pt-32 pb-24">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
-                <div>
-                    <h2 class="text-5xl luxury-font italic mb-8">Bize Ulaşın</h2>
-                    <p class="text-gray-500 mb-12 text-lg font-light leading-relaxed">Özel dikim veya hazır koleksiyonlarımız hakkında bilgi almak için randevu oluşturabilirsiniz.</p>
-                    
-                    <div class="space-y-10">
-                        <div class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gold"><i class="fas fa-map-marker-alt"></i></div>
-                            <p class="text-sm text-gray-600">Atatürk, Cevherağa Cami Sk. No:8 D:4, Ümraniye/İstanbul</p>
-                        </div>
-                        <div class="flex items-center gap-6">
-                            <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gold"><i class="fas fa-phone"></i></div>
-                            <p class="text-sm text-gray-600">+90 536 661 40 17</p>
-                        </div>
-                    </div>
+    <main id="page-iletisim" class="page-section pt-40 pb-32">
+        <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-24">
+            <div>
+                <h2 class="text-6xl luxury-font italic mb-12">Atölyemiz</h2>
+                <div class="space-y-10 text-sm font-light leading-relaxed">
+                    <p class="flex items-start"><i class="fas fa-map-marker-alt text-gold mt-1 mr-6"></i> Atatürk, Cevherağa Cami Sk. No:8 D:4, <br>Ümraniye/İstanbul</p>
+                    <p class="flex items-center"><i class="fas fa-phone text-gold mr-6"></i> +90 536 661 40 17</p>
+                    <p class="flex items-center"><i class="fab fa-instagram text-gold mr-6"></i> @ayeli.couture</p>
                 </div>
-
-                <div class="bg-gray-50 p-10 md:p-16">
-                    <div class="space-y-6">
-                        <input type="text" id="contactName" placeholder="Adınız Soyadınız" class="w-full bg-white px-6 py-4 outline-none border-b border-gray-100 focus:border-gold transition">
-                        <textarea id="contactMessage" rows="5" placeholder="Hayalinizdeki modelden bahsedin..." class="w-full bg-white px-6 py-4 outline-none border-b border-gray-100 focus:border-gold transition resize-none"></textarea>
-                        <button onclick="sendWhatsAppMessage()" class="w-full bg-black text-white py-5 text-xs font-bold tracking-widest hover:bg-gold transition uppercase">WhatsApp'tan Yazın</button>
-                    </div>
-                </div>
+            </div>
+            <div class="space-y-6">
+                <input type="text" id="cName" placeholder="Adınız Soyadınız" class="w-full p-5 border-b border-gray-100 outline-none focus:border-gold text-sm font-light">
+                <textarea id="cMsg" placeholder="Düşlediğiniz tasarım hakkında bize yazın..." class="w-full p-5 border-b border-gray-100 outline-none focus:border-gold h-40 text-sm font-light"></textarea>
+                <button onclick="sendWA()" class="w-full bg-[#25D366] text-white py-5 font-bold uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-black transition duration-500">WhatsApp Randevu</button>
             </div>
         </div>
     </main>
-
-    <footer class="bg-white border-t border-gray-100 py-16">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center">
-            <h2 class="luxury-font text-3xl mb-8 tracking-[0.2em]">AYELİ COUTURE</h2>
-            <div class="flex gap-8 mb-12 text-gray-400">
-                <a href="https://www.instagram.com/ayeli.couture?igsh=MWgwejBkMDVzeXp1cw=="class="hover:text-gold transition"><i class="fab fa-instagram text-xl"></i></a>
-            </div>
-            <div class="w-full border-t border-gray-50 pt-8 flex flex-col md:row justify-between items-center text-[10px] uppercase tracking-widest text-gray-400 gap-4">
-                <p>©2026 Ayeli Couture. Tüm Hakları Saklıdır.</p>
-                <div class="flex items-center gap-2">
-                    <span>Powered by: <strong><a href="http://ybg13.com">YBG13™</a></strong></span>
-                    <span class="admin-dot" onclick="openAdminLogin()">.</span>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <div id="productModal" class="modal">
-        <div class="bg-white max-w-6xl w-full max-h-[90vh] flex flex-col md:flex-row relative overflow-hidden shadow-2xl">
-            <button onclick="closeModal('productModal')" class="close-btn">&times;</button>
-            
-            <div class="md:w-1/2 bg-gray-100 h-[400px] md:h-auto overflow-hidden">
-                <img id="modalImg" src="" class="w-full h-full object-cover">
+        <div class="modal-content">
+            <button onclick="closeModal('productModal')" class="absolute top-6 right-6 z-[110] text-3xl font-thin hover:text-gold transition">&times;</button>
+            <div class="w-full md:w-1/2 h-[50vh] md:h-auto bg-white relative">
+                <img id="modalImg" src="" class="w-full h-full object-cover object-top transition-opacity duration-700">
+                <div id="modalThumbs" class="absolute bottom-0 w-full p-4 flex gap-3 overflow-x-auto bg-white/20 backdrop-blur-md custom-scrollbar"></div>
             </div>
-            
-            <div class="md:w-1/2 p-10 md:p-20 flex flex-col justify-center overflow-y-auto">
-                <span id="modalCategory" class="text-gold text-[10px] font-bold tracking-[0.3em] uppercase mb-4">Kategori</span>
-                <h2 id="modalTitle" class="text-4xl md:text-5xl luxury-font mb-8">Model Adı</h2>
-                <div class="w-16 h-px bg-gold mb-10"></div>
-                <p id="modalDesc" class="text-gray-500 leading-loose text-lg font-light italic mb-12">Model açıklaması burada yer alacaktır.</p>
-                
-                <div class="flex flex-col gap-4 text-sm text-gray-400 mb-12">
-                    <p><i class="fas fa-check text-gold mr-3"></i> Kişiye Özel Ölçü ve Prova</p>
-                    <p><i class="fas fa-check text-gold mr-3"></i> Birinci Sınıf El İşçiliği</p>
-                    <p><i class="fas fa-check text-gold mr-3"></i>1. sınıf Kumaş Kalitesi</p>
-                </div>
-
-                <a id="modalWa" href="#" target="_blank" class="bg-black text-white py-5 text-center text-xs font-bold tracking-widest hover:bg-gold transition uppercase flex items-center justify-center gap-3">
-                    <i class="fab fa-whatsapp text-lg"></i>
-                    Fiyat Bilgisi ve Randevu
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div id="addModal" class="modal">
-        <div class="bg-white p-12 max-w-xl w-full shadow-2xl overflow-y-auto max-h-[90vh] relative">
-            <button onclick="closeModal('addModal')" class="close-btn">&times;</button>
-
-            <h2 class="text-3xl luxury-font mb-10 italic">Tasarım Portföyüne Ekle</h2>
-            <div class="space-y-6">
-                <input type="text" id="newName" placeholder="Model İsmi" class="w-full border-b border-gray-100 py-3 outline-none focus:border-gold">
-                <div class="grid grid-cols-2 gap-6">
-                    <select id="newCategory" class="w-full border-b border-gray-100 py-3 outline-none focus:border-gold">
-                        <option value="satilik">Satılık</option>
-                        <option value="kiralik">Kiralık</option>
-                    </select>
-                    <input type="text" id="newImage" placeholder="Görsel URL" class="w-full border-b border-gray-100 py-3 outline-none focus:border-gold">
-                </div>
-                <textarea id="newDesc" rows="4" placeholder="Modelin hikayesi ve detayları..." class="w-full border-b border-gray-100 py-3 outline-none focus:border-gold resize-none"></textarea>
-                
-                <div id="dropZone" class="border-2 border-dashed border-gray-100 p-10 text-center text-gray-400 cursor-pointer hover:bg-gray-50 transition" onclick="document.getElementById('fileInput').click()">
-                    <input type="file" id="fileInput" class="hidden" accept="image/*">
-                    <i class="fas fa-cloud-upload-alt text-3xl mb-4 text-gold"></i>
-                    <p class="text-[10px] uppercase font-bold tracking-widest">Sürükle veya Dosya Seç</p>
-                </div>
-
-                <div class="flex gap-4 pt-4">
-                    <button onclick="saveProduct()" class="flex-1 bg-black text-white py-4 text-xs font-bold tracking-widest uppercase hover:bg-gold transition">Kaydet</button>
-                    <button onclick="closeModal('addModal')" class="flex-1 border border-gray-100 py-4 text-xs font-bold tracking-widest uppercase hover:bg-gray-50 transition">İptal</button>
-                </div>
+            <div class="w-full md:w-1/2 p-10 md:p-20 flex flex-col justify-center bg-white">
+                <span id="modalCat" class="text-gold text-[9px] font-bold tracking-[0.4em] uppercase mb-6">Koleksiyon</span>
+                <h2 id="modalTitle" class="text-5xl luxury-font mb-8 leading-tight">Model İsmi</h2>
+                <p id="modalDesc" class="text-gray-400 text-sm leading-relaxed mb-12 font-light"></p>
+                <button id="modalWaBtn" class="bg-black text-white py-5 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-gold transition duration-700">İletişime Geç</button>
             </div>
         </div>
     </div>
 
     <div id="adminModal" class="modal">
-        <div class="bg-white p-10 max-w-xs w-full text-center relative">
-            <button onclick="closeModal('adminModal')" class="close-btn" style="top: -20px; right: -20px;">&times;</button>
-            <h3 class="luxury-font text-2xl mb-8">Yetkili Erişimi</h3>
-            <input type="password" id="adminPass" placeholder="Şifre" class="w-full border-b border-gray-200 py-4 text-center outline-none mb-8 focus:border-gold">
-            <button onclick="verifyAdmin()" class="w-full bg-black text-white py-4 text-xs font-bold tracking-widest uppercase">Giriş</button>
+        <div class="bg-white p-12 w-full max-w-sm text-center border">
+            <h3 class="luxury-font text-2xl mb-10">Admin Access</h3>
+            <input type="password" id="adminPass" placeholder="Şifre" class="w-full border-b p-4 text-center outline-none mb-10 text-sm focus:border-gold">
+            <button onclick="checkAdmin()" class="w-full bg-black text-white py-4 text-[10px] uppercase font-bold tracking-widest">Giriş Yap</button>
         </div>
     </div>
 
+    <div id="addModal" class="modal">
+        <div class="bg-white p-10 w-full max-w-xl relative max-h-[90vh] overflow-y-auto border">
+            <button onclick="closeModal('addModal')" class="absolute top-6 right-6 text-3xl font-thin">&times;</button>
+            <h2 class="luxury-font text-3xl mb-10">Model Kaydı</h2>
+            <div class="space-y-6">
+                <input type="text" id="newName" placeholder="Model Adı" class="w-full border-b p-4 outline-none text-sm focus:border-gold">
+                <select id="newCat" class="w-full border-b p-4 outline-none text-sm focus:border-gold">
+                    <option value="satilik">Satılık</option>
+                    <option value="kiralik">Kiralık</option>
+                </select>
+                <textarea id="newDesc" placeholder="Model hikayesi ve detaylar..." class="w-full border-b p-4 outline-none text-sm h-32 focus:border-gold"></textarea>
+                <input type="file" id="fileInp" multiple class="hidden">
+                <button onclick="document.getElementById('fileInp').click()" class="w-full bg-gray-50 py-5 text-[9px] font-bold uppercase tracking-widest border border-dashed border-gray-200">Görselleri Seç</button>
+                <div id="previews" class="flex flex-wrap gap-3 mt-4"></div>
+                <button onclick="saveProduct()" class="w-full bg-black text-white py-5 font-bold text-[10px] uppercase tracking-widest hover:bg-gold transition mt-8">Veritabanına Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-[#0a0a0a] text-white pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-24 border-b border-white/5 pb-24">
+            <div class="space-y-8">
+                <div class="text-2xl luxury-font tracking-[0.3em]">AYELİ <span class="text-gold font-light">COUTURE</span></div>
+                <p class="text-gray-500 text-sm font-light leading-relaxed max-w-xs">Her dikiş bir sanattır. Size özel en lüks kumaşlarla hayallerinizi dikiyoruz.</p>
+                <div class="flex space-x-8 text-xl text-gray-500">
+                    <a href="#" class="hover:text-gold transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-gold transition"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="md:ml-auto">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">Bölümler</h4>
+                <ul class="space-y-5 text-sm font-light text-gray-500">
+                    <li><a href="javascript:void(0)" onclick="navigateTo('home')" class="hover:text-gold transition">Anasayfa</a></li>
+                    <li><a href="javascript:void(0)" onclick="navigateTo('koleksiyon')" class="hover:text-gold transition">Koleksiyon</a></li>
+                    <li><a href="javascript:void(0)" onclick="navigateTo('iletisim')" class="hover:text-gold transition">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="md:ml-auto text-sm font-light text-gray-500 space-y-6">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">İletişim</h4>
+                <p>Ümraniye, İstanbul / Türkiye</p>
+                <p>+90 536 661 40 17</p>
+                <p>info@ayelicouture.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-16 flex flex-col md:row justify-between items-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+            <p>© 2026 Ayeli Couture.</p>
+            <p>Crafted by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a> <span class="admin-trigger" onclick="openModal('adminModal')">.</span></p>
+        </div>
+    </footer>
+
     <script>
-        // --- DEĞİŞKENLER VE BAŞLANGIÇ ---
         let products = [];
         let isAdmin = false;
-        let uploadedImageBase64 = ""; // Yüklenen fotoğrafın verisini tutar
+        let tempImages = [];
+        let sliderTimer = null;
 
-        // --- FOTOĞRAF YÜKLEME MANTIĞI (SÜRÜKLE BIRAK / DOSYA SEÇİMİ) ---
-        const fileInput = document.getElementById('fileInput');
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    uploadedImageBase64 = event.target.result; // Fotoğrafı Base64 formatına çevir
-                    document.getElementById('dropZone').innerHTML = `<img src="${uploadedImageBase64}" class="h-40 w-full object-contain">`;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Sürükle Bırak Eventleri
-        const dropZone = document.getElementById('dropZone');
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('bg-gray-50', 'border-gold');
-        });
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('bg-gray-50', 'border-gold');
-        });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('bg-gray-50', 'border-gold');
-            if (e.dataTransfer.files.length) {
-                fileInput.files = e.dataTransfer.files;
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
-            }
-        });
-
-        // --- FIREBASE VERİ ÇEKME ---
-        async function fetchProducts() {
-            if (!window.fs) { setTimeout(fetchProducts, 100); return; }
-            const { collection, getDocs } = window.fs;
-            const querySnapshot = await getDocs(collection(window.db, "ayeli_products"));
-            
+        // --- Data ---
+        async function loadData() {
+            if (!window.fs) { setTimeout(loadData, 200); return; }
+            const snap = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
             products = [];
-            querySnapshot.forEach((doc) => {
-                products.push({ dbId: doc.id, ...doc.data() });
-            });
-            
-            // Eğer Firebase boşsa örnek birkaç tane ekleyelim (Eski localStorage varsayılanları)
-            if(products.length === 0) {
-                products = [
-                   
-                ];
-            }
-            renderProducts();
+            snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
+            render();
         }
 
-        // --- FIREBASE ÜRÜN EKLEME ---
-        async function saveProduct() {
-            const name = document.getElementById('newName').value;
-            const cat = document.getElementById('newCategory').value;
-            const urlInput = document.getElementById('newImage').value;
-            const desc = document.getElementById('newDesc').value;
-
-            // Eğer dosya seçilmediyse URL kutusuna bak
-            const finalImage = uploadedImageBase64 || urlInput || "https://images.unsplash.com/photo-1546193430-c2d207739ed7?auto=format&fit=crop&w=800&q=80";
-
-            if(!name || !desc) return alert("Lütfen isim ve açıklama alanlarını doldurun.");
-
-            const newProduct = {
-                id: Date.now(),
-                name: name,
-                category: cat,
-                desc: desc,
-                image: finalImage
-            };
-
-            // Firebase'e kaydet
-            try {
-                const { collection, addDoc } = window.fs;
-                await addDoc(collection(window.db, "ayeli_products"), newProduct);
-                
-                // Formu temizle
-                document.getElementById('newName').value = "";
-                document.getElementById('newDesc').value = "";
-                document.getElementById('newImage').value = "";
-                uploadedImageBase64 = "";
-                document.getElementById('dropZone').innerHTML = `<input type="file" id="fileInput" class="hidden" accept="image/*"><i class="fas fa-cloud-upload-alt text-3xl mb-4 text-gold"></i><p class="text-[10px] uppercase font-bold tracking-widest">Sürükle veya Dosya Seç</p>`;
-                
-                closeModal('addModal');
-                fetchProducts(); // Listeyi yenile
-            } catch (e) {
-                console.error("Hata: ", e);
-                alert("Ürün eklenirken bir hata oluştu.");
-            }
-        }
-
-        // --- FIREBASE ÜRÜN SİLME ---
-        async function deleteProduct(e, id, dbId) {
-            e.stopPropagation();
-            if(confirm("Bu modeli koleksiyondan kalıcı olarak silmek istediğinize emin misiniz?")) {
-                if(dbId) {
-                    const { doc, deleteDoc } = window.fs;
-                    await deleteDoc(doc(window.db, "ayeli_products", dbId));
-                } else {
-                    products = products.filter(p => p.id !== id);
-                }
-                fetchProducts(); // Listeyi yenile
-            }
-        }
-
-        // --- NAVİGASYON VE RENDER ---
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('page-active'));
-            document.getElementById('page-' + pageId).classList.add('page-active');
-            document.getElementById('mobileMenu').classList.remove('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function filterItems(category) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('border-gold', 'text-black');
-                btn.classList.add('border-transparent', 'text-gray-400');
-            });
-            event.target.classList.remove('border-transparent', 'text-gray-400');
-            event.target.classList.add('border-gold', 'text-black');
-            renderProducts(category);
-        }
-
-        function renderProducts(filter = 'all') {
+        function render(filter = 'all') {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
             const list = filter === 'all' ? products : products.filter(p => p.category === filter);
             
             list.forEach(p => {
-                const card = document.createElement('div');
-                card.className = "group relative bg-white cursor-pointer" + (isAdmin ? " admin-mode" : "");
-                card.innerHTML = `
-                    <div class="delete-btn" onclick="deleteProduct(event, ${p.id}, '${p.dbId}')"><i class="fas fa-trash-alt text-xs"></i></div>
-                    <div class="relative overflow-hidden aspect-[3/4] mb-6" onclick="showProductDetail(${p.id})">
-                        <img src="${p.image}" class="w-full h-full object-cover transition duration-1000 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition duration-500"></div>
-                        <div class="absolute bottom-6 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition duration-500">
-                            <span class="bg-white text-black px-8 py-3 text-[10px] font-bold tracking-widest uppercase">Detayları Gör</span>
-                        </div>
+                const div = document.createElement('div');
+                div.className = `group relative bg-white cursor-pointer ${isAdmin ? 'admin-mode' : ''}`;
+                div.innerHTML = `
+                    <div class="delete-btn" onclick="deleteItem(event, '${p.dbId}')"><i class="fas fa-trash-alt text-xs"></i></div>
+                    <div class="aspect-[3/4] overflow-hidden mb-8" onclick="showDetail(${p.id})">
+                        <img src="${p.images?.[0] || p.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-[1.5s] ease-out">
                     </div>
                     <div class="text-center">
-                        <h3 class="luxury-font text-2xl uppercase tracking-wider mb-2">${p.name}</h3>
-                        <p class="text-[10px] text-gray-400 tracking-[0.2em] uppercase">${p.category}</p>
+                        <h3 class="luxury-font text-lg tracking-widest uppercase text-black">${p.name}</h3>
+                        <p class="text-[8px] text-gray-400 tracking-[0.3em] uppercase mt-3">${p.category}</p>
                     </div>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(div);
             });
         }
 
-        // --- DİĞER FONKSİYONLAR ---
-        function verifyAdmin() {
-            const p = document.getElementById('adminPass').value;
-            if(p === 'ayşe1453') {
+        function checkAdmin() {
+            if(document.getElementById('adminPass').value === 'ayşe1453') {
                 isAdmin = true;
                 document.getElementById('adminControls').classList.remove('hidden');
                 closeModal('adminModal');
-                renderProducts();
+                render();
+            } else { alert('Erişim Reddedildi.'); }
+        }
+
+        // --- Navigation ---
+        function navigateTo(p) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('page-active'));
+            document.getElementById('page-'+p).classList.add('page-active');
+            closeMenu();
+            if(p === 'koleksiyon') render();
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function showDetail(id) {
+            if (sliderTimer) clearInterval(sliderTimer);
+            const p = products.find(x => x.id === id);
+            const imgs = p.images || [p.image];
+            let cur = 0;
+
+            document.getElementById('modalTitle').innerText = p.name;
+            document.getElementById('modalDesc').innerText = p.desc;
+            document.getElementById('modalCat').innerText = p.category;
+            document.getElementById('modalWaBtn').onclick = () => window.open(`https://wa.me/905366614017?text=${encodeURIComponent(p.name + ' tasarımı için randevu talep ediyorum.')}`);
+
+            const main = document.getElementById('modalImg');
+            const tBox = document.getElementById('modalThumbs');
+            tBox.innerHTML = '';
+
+            const updateImg = (idx) => {
+                cur = idx;
+                main.style.opacity = '0';
+                setTimeout(() => { main.src = imgs[cur]; main.style.opacity = '1'; }, 250);
+            };
+
+            updateImg(0);
+            if(imgs.length > 1) {
+                imgs.forEach((s, i) => {
+                    const t = document.createElement('img');
+                    t.src = s;
+                    t.className = "w-16 h-16 object-cover cursor-pointer border-b-2 border-transparent hover:border-black shrink-0 transition";
+                    t.onclick = () => { clearInterval(sliderTimer); updateImg(i); };
+                    tBox.appendChild(t);
+                });
+                sliderTimer = setInterval(() => { updateImg((cur + 1) % imgs.length); }, 5000);
+            }
+            openModal('productModal');
+        }
+
+        // --- UI ---
+        function toggleMenu() {
+            const m = document.getElementById('mobileMenu');
+            const icon = document.getElementById('navIcon');
+            if(m.classList.contains('translate-x-0')) {
+                closeMenu();
             } else {
-                alert("Şifre hatalı.");
+                m.classList.remove('translate-x-full');
+                m.classList.add('translate-x-0');
+                icon.classList.add('open');
             }
         }
 
-        function sendWhatsAppMessage() {
-            const name = document.getElementById('contactName').value;
-            const message = document.getElementById('contactMessage').value;
-            const text = encodeURIComponent(`Merhaba, ben ${name}. ${message}`);
-            window.open(`https://wa.me/905366614017?text=${text}`);
+        function closeMenu() {
+            document.getElementById('mobileMenu').classList.add('translate-x-full');
+            document.getElementById('mobileMenu').classList.remove('translate-x-0');
+            document.getElementById('navIcon').classList.remove('open');
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
-        function openAdminLogin() { document.getElementById('adminModal').style.display = 'flex'; }
-        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        document.getElementById('menuBtn').onclick = toggleMenu;
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id==='productModal') clearInterval(sliderTimer); }
+        function filterItems(c) { render(c); }
+        function sendWA() { window.open(`https://wa.me/905366614017?text=${encodeURIComponent(document.getElementById('cMsg').value)}`); }
 
-        function showProductDetail(id) {
-            const p = products.find(x => x.id === id);
-            document.getElementById('modalTitle').innerText = p.name;
-            document.getElementById('modalDesc').innerText = p.desc;
-            document.getElementById('modalImg').src = p.image;
-            document.getElementById('modalCategory').innerText = p.category;
-            document.getElementById('modalWa').href = `https://wa.me/905366614017?text=Merhaba, ${p.name} modeli hakkında fiyat bilgisi alabilir miyim?`;
-            document.getElementById('productModal').style.display = 'flex';
+        // --- Admin Actions ---
+        async function saveProduct() {
+            const n = document.getElementById('newName').value;
+            const d = document.getElementById('newDesc').value;
+            const c = document.getElementById('newCat').value;
+            if(!n || !d || tempImages.length === 0) return alert('Lütfen bilgileri doldurun ve resim yükleyin.');
+
+            const p = { id: Date.now(), name: n, desc: d, category: c, images: tempImages, image: tempImages[0] };
+            await window.fs.addDoc(window.fs.collection(window.db, "ayeli_products"), p);
+            tempImages = [];
+            document.getElementById('previews').innerHTML = '';
+            closeModal('addModal');
+            loadData();
         }
 
-        // Sayfa yüklendiğinde Firebase'den çek
-        window.onload = () => {
-            fetchProducts();
+        async function deleteItem(e, dbId) {
+            e.stopPropagation();
+            if(confirm('Bu tasarım sistemden kaldırılsın mı?')) {
+                await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
+                loadData();
+            }
+        }
+
+        document.getElementById('fileInp').onchange = function(e) {
+            Array.from(e.target.files).forEach(f => {
+                const r = new FileReader();
+                r.onload = (ev) => {
+                    tempImages.push(ev.target.result);
+                    const i = document.createElement('img');
+                    i.src = ev.target.result;
+                    i.className = "w-16 h-16 object-cover rounded border";
+                    document.getElementById('previews').appendChild(i);
+                };
+                r.readAsDataURL(f);
+            });
         };
+
+        window.onload = loadData;
     </script>
 </body>
 </html>
-
-
