@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayeli Couture | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwfEYe0JztVcatqsbI6vUmjizJBaSKpYQ",
+            authDomain: "messi-2704f.firebaseapp.com",
+            projectId: "messi-2704f",
+            storageBucket: "messi-2704f.firebasestorage.app",
+            messagingSenderId: "605613457448",
+            appId: "1:605613457448:web:d8f4de486df83a1e3d751d",
+            measurementId: "G-KHZQ294WXP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getFirestore(app);
+        window.fs = { collection, addDoc, getDocs, deleteDoc, doc };
+    </script>
+
+    <style>
+        :root { --gold: #b8924e; --dark-bg: #0a0a0a; --glass: rgba(255, 255, 255, 0.03); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--dark-bg); color: #fff; }
+        .luxury-font { font-family: 'Playfair Display', serif; }
+        
+        /* Glassmorphism */
+        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .login-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        
+        .custom-input { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; }
+        .custom-input:focus { border-color: var(--gold); }
+
+        .hidden-content { display: none; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div id="loginGate" class="login-overlay">
+        <div class="w-full max-w-sm p-8 text-center">
+            <h2 class="luxury-font text-3xl mb-8 tracking-widest text-gold uppercase">Yönetim Paneli</h2>
+            <input type="password" id="adminPass" placeholder="Erişim Şifresi" 
+                   class="w-full custom-input p-4 text-center text-xl mb-6 tracking-[0.5em]">
+            <button onclick="checkAdmin()" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest hover:bg-gold transition">Giriş Yap</button>
+        </div>
+    </div>
+
+    <div id="adminContent" class="hidden-content max-w-7xl mx-auto">
+        <header class="flex justify-between items-center mb-16">
+            <div>
+                <h1 class="luxury-font text-4xl mb-2">Kontrol Merkezi</h1>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Ayeli Couture Koleksiyon Yönetimi</p>
+            </div>
+            <button onclick="location.reload()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+        </header>
+
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="md:col-span-1">
+                <div class="glass-card p-8 sticky top-10">
+                    <h3 class="luxury-font text-xl mb-8 border-b border-white/5 pb-4">Yeni Model Ekle</h3>
+                    <div class="space-y-6">
+                        <input type="text" id="newName" placeholder="Model İsmi" class="w-full custom-input p-3 text-sm">
+                        
+                        <select id="newCat" class="w-full custom-input p-3 text-sm bg-black">
+                            <option value="satilik">Satılık</option>
+                            <option value="kiralik">Kiralık</option>
+                        </select>
+                        
+                        <textarea id="newDesc" placeholder="Model Detayları..." class="w-full custom-input p-3 text-sm h-32"></textarea>
+                        
+                        <input type="file" id="fileInp" multiple accept="image/*,video/*" class="hidden">
+                        <button onclick="document.getElementById('fileInp').click()" 
+                                class="w-full py-4 border border-dashed border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition">
+                            <i class="fas fa-cloud-upload-alt mr-2"></i> Medya Yükle (Görsel/Video)
+                        </button>
+                        
+                        <div id="previews" class="flex flex-wrap gap-2 mt-4"></div>
+                        
+                        <button onclick="saveProduct()" id="saveBtn" class="w-full bg-gold text-white py-4 font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition">
+                            Veritabanına Kaydet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-6" id="productGrid">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let tempMedia = [];
+
+        function checkAdmin() {
+            const pass = document.getElementById('adminPass').value;
+            if(pass === 'ayşe1453') {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminContent').classList.remove('hidden-content');
+                loadData();
+            } else {
+                alert('Hatalı şifre.');
+            }
+        }
+
+        async function loadData() {
+            if (!window.fs) { setTimeout(loadData, 200); return; }
+            const snap = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
+            products = [];
+            snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
+            render();
+        }
+
+        function render() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            
+            products.forEach(p => {
+                const firstMedia = p.images?.[0] || p.image;
+                const isVideo = firstMedia && typeof firstMedia === 'object' && firstMedia.type === 'video';
+                const src = isVideo ? firstMedia.src : (firstMedia.src || firstMedia);
+
+                const div = document.createElement('div');
+                div.className = "glass-card p-4 relative group overflow-hidden";
+                div.innerHTML = `
+                    <button onclick="deleteItem('${p.dbId}')" class="absolute top-2 right-2 z-10 w-8 h-8 bg-black/80 rounded-full text-white text-[10px] opacity-0 group-hover:opacity-100 transition">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="aspect-[3/4] mb-4 bg-black flex items-center justify-center overflow-hidden">
+                        ${isVideo ? `<video src="${src}" class="w-full h-full object-cover" muted loop autoplay playsinline></video>` : `<img src="${src}" class="w-full h-full object-cover">`}
+                    </div>
+                    <p class="text-[10px] uppercase font-bold text-gold">${p.category}</p>
+                    <h4 class="luxury-font text-sm truncate">${p.name}</h4>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        document.getElementById('fileInp').onchange = function(e) {
+            Array.from(e.target.files).forEach(f => {
+                const isVideo = f.type.startsWith('video/');
+                const r = new FileReader();
+                r.onload = (ev) => {
+                    tempMedia.push({ type: isVideo ? 'video' : 'image', src: ev.target.result });
+                    const preview = document.createElement(isVideo ? 'video' : 'img');
+                    preview.src = ev.target.result;
+                    preview.className = "w-12 h-12 object-cover rounded border border-white/10 bg-black";
+                    if(isVideo) preview.muted = true;
+                    document.getElementById('previews').appendChild(preview);
+                };
+                r.readAsDataURL(f);
+            });
+        };
+
+        async function saveProduct() {
+            const n = document.getElementById('newName').value;
+            const d = document.getElementById('newDesc').value;
+            const c = document.getElementById('newCat').value;
+            const btn = document.getElementById('saveBtn');
+
+            if(!n || !d || tempMedia.length === 0) return alert('Boş alan bırakmayın.');
+
+            btn.innerText = "YÜKLENİYOR...";
+            btn.disabled = true;
+
+            const p = { id: Date.now(), name: n, desc: d, category: c, images: tempMedia, image: tempMedia[0] };
+            
+            try {
+                await window.fs.addDoc(window.fs.collection(window.db, "ayeli_products"), p);
+                tempMedia = [];
+                document.getElementById('previews').innerHTML = '';
+                document.getElementById('newName').value = '';
+                document.getElementById('newDesc').value = '';
+                loadData();
+                alert('Başarıyla eklendi.');
+            } catch (err) {
+                alert('Hata oluştu. Video boyutu çok büyük olabilir.');
+            } finally {
+                btn.innerText = "VERİTABANINA KAYDET";
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteItem(dbId) {
+            if(confirm('Bu modeli kalıcı olarak silmek istediğine emin misin?')) {
+                await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
+                loadData();
+            }
+        }
+
+        // --- Dosya Seçildiğinde (onchange) ---
+document.getElementById('fileInp').onchange = function(e) {
+    Array.from(e.target.files).forEach(async (f) => { // async ekledik
+        const isVideo = f.type.startsWith('video/');
+        const r = new FileReader();
+        r.onload = async (ev) => { // async ekledik
+            let finalMedia = ev.target.result;
+            
+            // Eğer video ise otomatik sıkıştırıyoruz
+            if (isVideo) {
+                finalMedia = await compressVideo(finalMedia);
+            }
+
+            tempMedia.push({ type: isVideo ? 'video' : 'image', src: finalMedia });
+            
+            // ... mevcut preview oluşturma kodları ...
+        };
+        r.readAsDataURL(f);
+    });
+};
+    </script>
+</body>
+</html>
