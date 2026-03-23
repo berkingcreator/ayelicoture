@@ -96,7 +96,7 @@
         <section class="min-h-screen flex items-center bg-white pt-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
                 <div class="relative z-10 text-center md:text-left">
-                    <h4 class="text-gold uppercase tracking-[0.4em] text-[10px] font-bold mb-6">Haute Couture & Bridal (Sitemiz bakıma alınmıştır bakım sırasında eklenen fotoğraflar bakım kaynaklıdır. powered by: <a href="https:www.ybg13.com" target="blank">YBG13™</a></h4>
+                    <h4 class="text-gold uppercase tracking-[0.4em] text-[10px] font-bold mb-6">Haute Couture & Bridal</h4>
                     <h1 class="text-6xl md:text-8xl luxury-font mb-10 leading-[1.1] text-black">Zarafet <br><span class="italic font-light">Sizinle Başlar.</span></h1>
                     <p class="text-gray-400 font-light text-sm max-w-sm mb-12 leading-relaxed">İstanbul'un kalbinde, her dikişinde bir hikaye barındıran tamamen size özel tasarımlar.</p>
                     <button onclick="navigateTo('koleksiyon')" class="bg-black text-white px-12 py-5 text-[10px] font-bold tracking-widest uppercase hover:bg-gold transition duration-500 shadow-2xl">Koleksiyonu Keşfet</button>
@@ -223,178 +223,185 @@
         </div>
         <div class="max-w-7xl mx-auto px-6 pt-16 flex flex-col md:row justify-between items-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
             <p>© 2026 Ayeli Couture.</p>
-            <p>Crafted by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a> <span class="admin-trigger" onclick="openModal('adminModal')">.</span></p>
+            <p>Crafted by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a> 
         </div>
     </footer>
 
-    <script>
-        let products = [];
-        let isAdmin = false;
-        let tempImages = [];
-        let sliderTimer = null;
+<script>
+// --- 1. DEĞİŞKENLER (Global ve Çakışma Önleyici) ---
+var products = products || [];
+var isAdmin = isAdmin || false;
+var autoSlideInterval = autoSlideInterval || null;
 
-        // --- Data ---
-        async function loadData() {
-            if (!window.fs) { setTimeout(loadData, 200); return; }
-            const snap = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
-            products = [];
-            snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
-            render();
-        }
+// --- 2. VERİ ÇEKME (Firebase) ---
+async function loadData() {
+    if (!window.fs || !window.db) { 
+        setTimeout(loadData, 300); 
+        return; 
+    }
+    try {
+        const querySnapshot = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
+        products = [];
+        querySnapshot.forEach((doc) => {
+            products.push({ dbId: doc.id, ...doc.data() });
+        });
+        console.log("Veriler Yüklendi:", products.length);
+        render('all'); 
+    } catch (error) {
+        console.error("Yükleme Hatası:", error);
+    }
+}
 
-        function render(filter = 'all') {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
-            const list = filter === 'all' ? products : products.filter(p => p.category === filter);
-            
-            list.forEach(p => {
-                const div = document.createElement('div');
-                div.className = `group relative bg-white cursor-pointer ${isAdmin ? 'admin-mode' : ''}`;
-                div.innerHTML = `
-                    <div class="delete-btn" onclick="deleteItem(event, '${p.dbId}')"><i class="fas fa-trash-alt text-xs"></i></div>
-                    <div class="aspect-[3/4] overflow-hidden mb-8" onclick="showDetail(${p.id})">
-                        <img src="${p.images?.[0] || p.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-[1.5s] ease-out">
-                    </div>
-                    <div class="text-center">
-                        <h3 class="luxury-font text-lg tracking-widest uppercase text-black">${p.name}</h3>
-                        <p class="text-[8px] text-gray-400 tracking-[0.3em] uppercase mt-3">${p.category}</p>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
+// --- 3. ANA SAYFA LİSTELEME ---
+function render(filter = 'all') {
+    const grid = document.getElementById('productGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
 
-        function checkAdmin() {
-            if(document.getElementById('adminPass').value === 'ayşe1453') {
-                isAdmin = true;
-                document.getElementById('adminControls').classList.remove('hidden');
-                closeModal('adminModal');
-                render();
-            } else { alert('Erişim Reddedildi.'); }
-        }
+    const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
 
-        // --- Navigation ---
-        function navigateTo(p) {
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('page-active'));
-            document.getElementById('page-'+p).classList.add('page-active');
-            closeMenu();
-            if(p === 'koleksiyon') render();
-            window.scrollTo({top:0, behavior:'smooth'});
-        }
+    filtered.forEach(p => {
+        const media = p.images?.[0] || p.image;
+        const isVideo = media && typeof media === 'object' && media.type === 'video';
+        const mediaSrc = isVideo ? media.src : (media.src || media);
 
-        function showDetail(id) {
-            if (sliderTimer) clearInterval(sliderTimer);
-            const p = products.find(x => x.id === id);
-            const imgs = p.images || [p.image];
-            let cur = 0;
-
-            document.getElementById('modalTitle').innerText = p.name;
-            document.getElementById('modalDesc').innerText = p.desc;
-            document.getElementById('modalCat').innerText = p.category;
-            document.getElementById('modalWaBtn').onclick = () => window.open(`https://wa.me/905366614017?text=${encodeURIComponent(p.name + ' tasarımı için randevu talep ediyorum.')}`);
-
-            const main = document.getElementById('modalImg');
-            const tBox = document.getElementById('modalThumbs');
-            tBox.innerHTML = '';
-
-            const updateImg = (idx) => {
-                cur = idx;
-                main.style.opacity = '0';
-                setTimeout(() => { main.src = imgs[cur]; main.style.opacity = '1'; }, 250);
-            };
-
-            updateImg(0);
-            if(imgs.length > 1) {
-                imgs.forEach((s, i) => {
-                    const t = document.createElement('img');
-                    t.src = s;
-                    t.className = "w-16 h-16 object-cover cursor-pointer border-b-2 border-transparent hover:border-black shrink-0 transition";
-                    t.onclick = () => { clearInterval(sliderTimer); updateImg(i); };
-                    tBox.appendChild(t);
-                });
-                sliderTimer = setInterval(() => { updateImg((cur + 1) % imgs.length); }, 5000);
-            }
-            openModal('productModal');
-        }
-
-        // --- UI ---
-        function toggleMenu() {
-            const m = document.getElementById('mobileMenu');
-            const icon = document.getElementById('navIcon');
-            if(m.classList.contains('translate-x-0')) {
-                closeMenu();
-            } else {
-                m.classList.remove('translate-x-full');
-                m.classList.add('translate-x-0');
-                icon.classList.add('open');
-            }
-        }
-
-        function closeMenu() {
-            document.getElementById('mobileMenu').classList.add('translate-x-full');
-            document.getElementById('mobileMenu').classList.remove('translate-x-0');
-            document.getElementById('navIcon').classList.remove('open');
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id==='productModal') clearInterval(sliderTimer); }
-        function filterItems(c) { render(c); }
-        function sendWA() { window.open(`https://wa.me/905366614017?text=${encodeURIComponent(document.getElementById('cMsg').value)}`); }
-
-        // --- Admin Actions ---
-        async function saveProduct() {
-            const n = document.getElementById('newName').value;
-            const d = document.getElementById('newDesc').value;
-            const c = document.getElementById('newCat').value;
-            if(!n || !d || tempImages.length === 0) return alert('Lütfen bilgileri doldurun ve resim yükleyin.');
-
-            const p = { id: Date.now(), name: n, desc: d, category: c, images: tempImages, image: tempImages[0] };
-            await window.fs.addDoc(window.fs.collection(window.db, "ayeli_products"), p);
-            tempImages = [];
-            document.getElementById('previews').innerHTML = '';
-            closeModal('addModal');
-            loadData();
-        }
-
-        async function deleteItem(e, dbId) {
-            e.stopPropagation();
-            if(confirm('Bu tasarım sistemden kaldırılsın mı?')) {
-                await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
-                loadData();
-            }
-        }
-
-        document.getElementById('fileInp').onchange = function(e) {
-            Array.from(e.target.files).forEach(f => {
-                const r = new FileReader();
-                r.onload = (ev) => {
-                    tempImages.push(ev.target.result);
-                    const i = document.createElement('img');
-                    i.src = ev.target.result;
-                    i.className = "w-16 h-16 object-cover rounded border";
-                    document.getElementById('previews').appendChild(i);
-                };
-                r.readAsDataURL(f);
-            });
-        };
-
-        window.onload = loadData;
-
-        // Sağ tıkı engelle
-    document.addEventListener('contextmenu', event => event.preventDefault());
-
-    // Klavye kısayollarını engelle
-    document.onkeydown = function(e) {
-        // F12 tuşu
-        if (e.keyCode == 123) {
-            return false;
-        }
-        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-        if (e.ctrlKey && (e.shiftKey && (e.keyCode == 73 || e.keyCode == 74) || e.keyCode == 85)) {
-            return false;
-        }
-    };
+        const card = document.createElement('div');
+        card.className = "group cursor-pointer relative animate-fadeIn";
+        card.onclick = () => openProduct(p.dbId || p.id);
         
-    </script>
-</body>
+        card.innerHTML = `
+            <div class="relative aspect-[3/4] overflow-hidden bg-[#f9f9f9] mb-6">
+                ${isAdmin ? `<button onclick="deleteItem(event, '${p.dbId}')" class="absolute top-4 right-4 z-50 bg-black text-white w-8 h-8 rounded-full flex items-center justify-center text-[10px] hover:bg-red-600 transition"><i class="fas fa-trash"></i></button>` : ''}
+                ${isVideo 
+                    ? `<video src="${mediaSrc}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" muted loop autoplay playsinline></video>`
+                    : `<img src="${mediaSrc}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`
+                }
+            </div>
+            <p class="text-[10px] tracking-[0.3em] text-gold mb-2 uppercase">${p.category}</p>
+            <h3 class="luxury-font text-lg tracking-wider">${p.name}</h3>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// --- 4. MODAL & OTOMATİK GEÇİŞ MOTORU ---
+function openProduct(id) {
+    const product = products.find(p => p.dbId === id || p.id === id);
+    if (!product) return;
+
+    if (autoSlideInterval) clearInterval(autoSlideInterval);
+
+    const modal = document.getElementById('productModal');
+    const mediaContainer = document.querySelector('#productModal .md\\:w-1\\/2.relative');
+    
+    document.getElementById('modalTitle').innerText = product.name;
+    document.getElementById('modalDesc').innerText = product.desc;
+    document.getElementById('modalCat').innerText = product.category;
+    document.getElementById('modalWaBtn').onclick = () => window.open(`https://wa.me/905366614017?text=${encodeURIComponent(product.name + ' tasarımı için bilgi almak istiyorum.')}`);
+
+    const allMedia = product.images || [product.image];
+    let currentIndex = 0;
+
+    const updateMedia = (index) => {
+        if (!allMedia[index]) return;
+        currentIndex = index;
+        const m = allMedia[currentIndex];
+        const isV = m && typeof m === 'object' && m.type === 'video';
+        const src = isV ? m.src : (m.src || m);
+        
+        // Medya alanı ve thumbs kutusunu aynı anda tazele
+        mediaContainer.innerHTML = `
+            ${isV 
+                ? `<video src="${src}" class="w-full h-full object-cover animate-fadeIn" autoplay muted loop controls playsinline></video>`
+                : `<img src="${src}" class="w-full h-full object-cover animate-fadeIn">`
+            }
+            <div id="modalThumbs" class="absolute bottom-0 w-full p-4 flex gap-3 overflow-x-auto bg-white/20 backdrop-blur-md custom-scrollbar"></div>
+        `;
+        rebuildThumbs(allMedia, updateMedia, currentIndex);
+    };
+
+    // 1.5 Saniye Zamanlayıcı (1500ms)
+    if (allMedia.length > 1) {
+        autoSlideInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % allMedia.length;
+            updateMedia(currentIndex);
+        }, 1500);
+    }
+
+    updateMedia(0);
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function rebuildThumbs(mediaList, callback, activeIndex) {
+    const tBox = document.getElementById('modalThumbs');
+    if(!tBox) return;
+    tBox.innerHTML = '';
+    mediaList.forEach((m, i) => {
+        const isV = m && typeof m === 'object' && m.type === 'video';
+        const src = isV ? m.src : (m.src || m);
+        const el = document.createElement(isV ? 'video' : 'img');
+        el.src = src;
+        const activeClass = i === activeIndex ? "border-gold opacity-100 scale-105" : "border-transparent opacity-50";
+        el.className = `w-14 h-14 object-cover cursor-pointer border-2 transition-all duration-500 shrink-0 ${activeClass}`;
+        
+        el.onclick = (e) => { 
+            e.stopPropagation(); 
+            clearInterval(autoSlideInterval); // Manuel tıklanırsa motoru durdur
+            callback(i); 
+        };
+        tBox.appendChild(el);
+    });
+}
+
+// --- 5. NAVİGASYON & YARDIMCI ARAÇLAR ---
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = 'auto';
+    if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = null;
+    }
+}
+
+function navigateTo(p) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('page-active'));
+    const target = document.getElementById('page-'+p);
+    if(target) target.classList.add('page-active');
+    closeMenu();
+    if(p === 'koleksiyon') loadData();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('translate-x-full');
+    document.getElementById('navIcon').classList.toggle('open');
+}
+
+function closeMenu() {
+    document.getElementById('mobileMenu').classList.add('translate-x-full');
+    document.getElementById('navIcon').classList.remove('open');
+}
+
+function checkAdmin() {
+    if(document.getElementById('adminPass').value === 'ayşe1453') {
+        isAdmin = true;
+        document.getElementById('adminControls').classList.remove('hidden');
+        closeModal('adminModal');
+        render();
+    } else { alert('Erişim Reddedildi.'); }
+}
+
+async function deleteItem(e, dbId) {
+    e.stopPropagation();
+    if(confirm('Silinsin mi?')) {
+        await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
+        loadData();
+    }
+}
+
+// --- 6. BAŞLATICI ---
+window.onload = loadData;
+document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
 </html>
