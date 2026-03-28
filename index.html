@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -407,5 +408,24 @@ async function deleteItem(e, dbId) {
 // --- 6. BAŞLATICI ---
 window.onload = loadData;
 document.addEventListener('contextmenu', e => e.preventDefault());
+// --- Filtreleme Fonksiyonu ---
+function filterItems(category) {
+    // 1. Verileri filtrele ve tekrar çiz
+    render(category);
+
+    // 2. Butonların görsel durumunu güncelle (UI Feedback)
+    const buttons = document.querySelectorAll('#page-koleksiyon button[onclick^="filterItems"]');
+    buttons.forEach(btn => {
+        if (btn.getAttribute('onclick').includes(`'${category}'`)) {
+            // Aktif buton stili
+            btn.classList.remove('border-transparent', 'text-gray-300');
+            btn.classList.add('border-gold', 'text-black');
+        } else {
+            // Pasif buton stili
+            btn.classList.remove('border-gold', 'text-black');
+            btn.classList.add('border-transparent', 'text-gray-300');
+        }
+    });
+}
 </script>
 </html>
