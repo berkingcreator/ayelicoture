@@ -10,7 +10,8 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // getDoc eklendi
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAwfEYe0JztVcatqsbI6vUmjizJBaSKpYQ",
@@ -24,23 +25,20 @@
 
         const app = initializeApp(firebaseConfig);
         window.db = getFirestore(app);
-        window.fs = { collection, addDoc, getDocs, deleteDoc, doc };
+        // fs nesnesine getDoc eklendi
+        window.fs = { collection, addDoc, getDocs, deleteDoc, doc, getDoc };
     </script>
 
     <style>
         :root { --gold: #b8924e; --dark-bg: #0a0a0a; --glass: rgba(255, 255, 255, 0.03); }
-        body { font-family: 'Inter', sans-serif; background-color: var(--dark-bg); color: #fff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--dark-bg); color: #fff; margin: 0; }
         .luxury-font { font-family: 'Playfair Display', serif; }
-        
-        /* Glassmorphism */
         .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        
         .login-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        
-        .custom-input { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; }
+        .custom-input { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); outline: none; transition: 0.3s; color: white; }
         .custom-input:focus { border-color: var(--gold); }
-
         .hidden-content { display: none; }
+        footer { margin-top: 50px; text-align: center; font-size: 12px; color: #444; padding-bottom: 20px; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -48,16 +46,16 @@
     <div id="loginGate" class="login-overlay">
         <div class="w-full max-w-sm p-8 text-center">
             <h2 class="luxury-font text-3xl mb-8 tracking-widest text-gold uppercase">Yönetim Paneli</h2>
-            <input type="password" id="adminPass" placeholder="Erişim Şifresi" 
-                   class="w-full custom-input p-4 text-center text-xl mb-6 tracking-[0.5em]">
-            <button onclick="checkAdmin()" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest hover:bg-gold transition">Giriş Yap</button>
+            <input type="password" id="adminPass" placeholder="Erişim Şifresi"
+                    class="w-full custom-input p-4 text-center text-xl mb-6 tracking-[0.5em]">
+            <button onclick="checkAdmin()" id="loginBtn" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest hover:bg-gold transition">Giriş Yap</button>
         </div>
     </div>
 
     <div id="adminContent" class="hidden-content max-w-7xl mx-auto">
         <header class="flex justify-between items-center mb-16">
             <div>
-                <h1 class="luxury-font text-4xl mb-2">Kontrol Merkezi</h1>
+                <h1 class="luxury-font text-4xl mb-2 text-gold">Kontrol Merkezi</h1>
                 <p class="text-xs uppercase tracking-widest text-gray-500">Ayeli Couture Koleksiyon Yönetimi</p>
             </div>
             <button onclick="location.reload()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
@@ -71,15 +69,15 @@
                         <input type="text" id="newName" placeholder="Model İsmi" class="w-full custom-input p-3 text-sm">
                         
                         <select id="newCat" class="w-full custom-input p-3 text-sm bg-black">
-                            <option value="satilik">Satılık</option>
-                            <option value="kiralik">Kiralık</option>
+                            <option value="Satılık">Satılık</option>
+                            <option value="Kiralık">Kiralık</option>
                         </select>
                         
                         <textarea id="newDesc" placeholder="Model Detayları..." class="w-full custom-input p-3 text-sm h-32"></textarea>
                         
                         <input type="file" id="fileInp" multiple accept="image/*,video/*" class="hidden">
-                        <button onclick="document.getElementById('fileInp').click()" 
-                                class="w-full py-4 border border-dashed border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition">
+                        <button onclick="document.getElementById('fileInp').click()"
+                                 class="w-full py-4 border border-dashed border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition">
                             <i class="fas fa-cloud-upload-alt mr-2"></i> Medya Yükle (Görsel/Video)
                         </button>
                         
@@ -97,31 +95,54 @@
                     </div>
             </div>
         </div>
+        <footer>Powered by <a href="https://www.ybg13.com" target="blank" class="hover:text-gold transition">YBG13™</a></footer>
     </div>
-
-    <footer>Powered by <a href="https://www.ybg13.com" target="blank">YBG13™</a></footer>
 
     <script>
         let products = [];
         let tempMedia = [];
 
-        function checkAdmin() {
-            const pass = document.getElementById('adminPass').value;
-            if(pass === 'ayşe1453') {
-                document.getElementById('loginGate').style.display = 'none';
-                document.getElementById('adminContent').classList.remove('hidden-content');
-                loadData();
-            } else {
-                alert('Hatalı şifre.');
+        // Şifreyi Firebase'den doğrulayan düzeltilmiş fonksiyon
+        async function checkAdmin() {
+            const passInput = document.getElementById('adminPass').value;
+            const btn = document.getElementById('loginBtn');
+            
+            if (!passInput) return alert("Şifre giriniz.");
+            
+            btn.innerText = "KONTROL EDİLİYOR...";
+            btn.disabled = true;
+
+            try {
+                // İstediğin koleksiyon: ayse, belge: admin
+                const docRef = window.fs.doc(window.db, "ayse", "admin");
+                const docSnap = await window.fs.getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().key === passInput) {
+                    document.getElementById('loginGate').style.display = 'none';
+                    document.getElementById('adminContent').classList.remove('hidden-content');
+                    loadData();
+                } else {
+                    alert('Hatalı veya yetkisiz şifre.');
+                }
+            } catch (error) {
+                console.error("Giriş hatası:", error);
+                alert('Bağlantı hatası oluştu.');
+            } finally {
+                btn.innerText = "GİRİŞ YAP";
+                btn.disabled = false;
             }
         }
 
         async function loadData() {
             if (!window.fs) { setTimeout(loadData, 200); return; }
-            const snap = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
-            products = [];
-            snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
-            render();
+            try {
+                const snap = await window.fs.getDocs(window.fs.collection(window.db, "ayeli_products"));
+                products = [];
+                snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
+                render();
+            } catch (error) {
+                console.error("Veri çekme hatası:", error);
+            }
         }
 
         function render() {
@@ -134,15 +155,15 @@
                 const src = isVideo ? firstMedia.src : (firstMedia.src || firstMedia);
 
                 const div = document.createElement('div');
-                div.className = "glass-card p-4 relative group overflow-hidden";
+                div.className = "glass-card p-4 relative group overflow-hidden transition hover:border-gold/30";
                 div.innerHTML = `
-                    <button onclick="deleteItem('${p.dbId}')" class="absolute top-2 right-2 z-10 w-8 h-8 bg-black/80 rounded-full text-white text-[10px] opacity-0 group-hover:opacity-100 transition">
+                    <button onclick="deleteItem('${p.dbId}')" class="absolute top-2 right-2 z-10 w-8 h-8 bg-red-600/80 rounded-full text-white text-[10px] opacity-0 group-hover:opacity-100 transition shadow-lg">
                         <i class="fas fa-trash"></i>
                     </button>
-                    <div class="aspect-[3/4] mb-4 bg-black flex items-center justify-center overflow-hidden">
+                    <div class="aspect-[3/4] mb-4 bg-black flex items-center justify-center overflow-hidden rounded-lg">
                         ${isVideo ? `<video src="${src}" class="w-full h-full object-cover" muted loop autoplay playsinline></video>` : `<img src="${src}" class="w-full h-full object-cover">`}
                     </div>
-                    <p class="text-[10px] uppercase font-bold text-gold">${p.category}</p>
+                    <p class="text-[10px] uppercase font-bold text-gold mb-1">${p.category}</p>
                     <h4 class="luxury-font text-sm truncate">${p.name}</h4>
                 `;
                 grid.appendChild(div);
@@ -172,12 +193,19 @@
             const btn = document.getElementById('saveBtn');
 
             if(!n || !d || tempMedia.length === 0) return alert('Boş alan bırakmayın.');
-
+            
             btn.innerText = "YÜKLENİYOR...";
             btn.disabled = true;
 
-            const p = { id: Date.now(), name: n, desc: d, category: c, images: tempMedia, image: tempMedia[0] };
-            
+            const p = { 
+                id: Date.now(), 
+                name: n, 
+                desc: d, 
+                category: c, 
+                images: tempMedia, 
+                image: tempMedia[0] 
+            };
+
             try {
                 await window.fs.addDoc(window.fs.collection(window.db, "ayeli_products"), p);
                 tempMedia = [];
@@ -185,9 +213,10 @@
                 document.getElementById('newName').value = '';
                 document.getElementById('newDesc').value = '';
                 loadData();
-                alert('Başarıyla eklendi.');
+                alert('Model başarıyla eklendi.');
             } catch (err) {
-                alert('Hata oluştu. Video boyutu çok büyük olabilir.');
+                console.error(err);
+                alert('Hata oluştu. Dosya boyutları çok yüksek olabilir.');
             } finally {
                 btn.innerText = "VERİTABANINA KAYDET";
                 btn.disabled = false;
@@ -196,31 +225,19 @@
 
         async function deleteItem(dbId) {
             if(confirm('Bu modeli kalıcı olarak silmek istediğine emin misin?')) {
-                await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
-                loadData();
+                try {
+                    await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
+                    loadData();
+                } catch (error) {
+                    alert("Silme işlemi başarısız.");
+                }
             }
         }
 
-        // --- Dosya Seçildiğinde (onchange) ---
-document.getElementById('fileInp').onchange = function(e) {
-    Array.from(e.target.files).forEach(async (f) => { // async ekledik
-        const isVideo = f.type.startsWith('video/');
-        const r = new FileReader();
-        r.onload = async (ev) => { // async ekledik
-            let finalMedia = ev.target.result;
-            
-            // Eğer video ise otomatik sıkıştırıyoruz
-            if (isVideo) {
-                finalMedia = await compressVideo(finalMedia);
-            }
-
-            tempMedia.push({ type: isVideo ? 'video' : 'image', src: finalMedia });
-            
-            // ... mevcut preview oluşturma kodları ...
-        };
-        r.readAsDataURL(f);
-    });
-};
+        // Global fonksiyon tanımları (onclick için gerekli)
+        window.checkAdmin = checkAdmin;
+        window.saveProduct = saveProduct;
+        window.deleteItem = deleteItem;
     </script>
 </body>
 </html>
