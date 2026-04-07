@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayeli Couture | Admin Dashboard</title>
+    <title>Ayeli Couture | Admin Dashboard (Vanguard v4.1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // getDoc eklendi
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -25,7 +24,6 @@
 
         const app = initializeApp(firebaseConfig);
         window.db = getFirestore(app);
-        // fs nesnesine getDoc eklendi
         window.fs = { collection, addDoc, getDocs, deleteDoc, doc, getDoc };
     </script>
 
@@ -45,20 +43,21 @@
 
     <div id="loginGate" class="login-overlay">
         <div class="w-full max-w-sm p-8 text-center">
-            <h2 class="luxury-font text-3xl mb-8 tracking-widest text-gold uppercase">Yönetim Paneli</h2>
-            <input type="password" id="adminPass" placeholder="Erişim Şifresi"
+            <h2 class="luxury-font text-3xl mb-8 tracking-widest text-gold uppercase">YBG13™ Güvenli Giriş</h2>
+            <input type="password" id="adminPass" placeholder="••••••••"
                     class="w-full custom-input p-4 text-center text-xl mb-6 tracking-[0.5em]">
-            <button onclick="checkAdmin()" id="loginBtn" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest hover:bg-gold transition">Giriş Yap</button>
+            <div id="aegisWarning" class="text-red-500 text-xs mb-4 hidden">Hatalı Erişim Anahtarı!</div>
+            <button onclick="checkAdmin()" id="loginBtn" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest hover:bg-gold transition">Kimliği Doğrula</button>
         </div>
     </div>
 
     <div id="adminContent" class="hidden-content max-w-7xl mx-auto">
         <header class="flex justify-between items-center mb-16">
             <div>
-                <h1 class="luxury-font text-4xl mb-2 text-gold">Kontrol Merkezi</h1>
-                <p class="text-xs uppercase tracking-widest text-gray-500">Ayeli Couture Koleksiyon Yönetimi</p>
+                <h1 class="luxury-font text-4xl mb-2 text-gold">Ayeli Couture</h1>
+                <p class="text-xs uppercase tracking-widest text-gray-500">Koleksiyon Yönetimi (Server-Side Verified)</p>
             </div>
-            <button onclick="location.reload()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+            <button onclick="location.reload()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i> Güvenli Çıkış</button>
         </header>
 
         <div class="grid md:grid-cols-3 gap-10">
@@ -67,72 +66,75 @@
                     <h3 class="luxury-font text-xl mb-8 border-b border-white/5 pb-4">Yeni Model Ekle</h3>
                     <div class="space-y-6">
                         <input type="text" id="newName" placeholder="Model İsmi" class="w-full custom-input p-3 text-sm">
-                        
                         <select id="newCat" class="w-full custom-input p-3 text-sm bg-black">
                             <option value="Satılık">Satılık</option>
                             <option value="Kiralık">Kiralık</option>
                         </select>
-                        
                         <textarea id="newDesc" placeholder="Model Detayları..." class="w-full custom-input p-3 text-sm h-32"></textarea>
-                        
                         <input type="file" id="fileInp" multiple accept="image/*,video/*" class="hidden">
                         <button onclick="document.getElementById('fileInp').click()"
                                  class="w-full py-4 border border-dashed border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition">
-                            <i class="fas fa-cloud-upload-alt mr-2"></i> Medya Yükle (Görsel/Video)
+                            <i class="fas fa-cloud-upload-alt mr-2"></i> Medya Yükle
                         </button>
-                        
                         <div id="previews" class="flex flex-wrap gap-2 mt-4"></div>
-                        
                         <button onclick="saveProduct()" id="saveBtn" class="w-full bg-gold text-white py-4 font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition">
-                            Veritabanına Kaydet
+                            Sistemi Güncelle
                         </button>
                     </div>
                 </div>
             </div>
 
             <div class="md:col-span-2">
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-6" id="productGrid">
-                    </div>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-6" id="productGrid"></div>
             </div>
         </div>
-        <footer>Powered by <a href="https://www.ybg13.com" target="blank" class="hover:text-gold transition">YBG13™</a></footer>
+        <footer>Altyapı <a href="https://www.ybg13.com" target="blank" class="hover:text-gold transition">YBG13™</a></footer>
     </div>
 
     <script>
         let products = [];
         let tempMedia = [];
 
-        // Şifreyi Firebase'den doğrulayan düzeltilmiş fonksiyon
+        // 🛡️ YENİ: Vercel Python API üzerinden şifre kontrolü
         async function checkAdmin() {
             const passInput = document.getElementById('adminPass').value;
             const btn = document.getElementById('loginBtn');
+            const warning = document.getElementById('aegisWarning');
             
-            if (!passInput) return alert("Şifre giriniz.");
+            if (!passInput) return;
             
-            btn.innerText = "KONTROL EDİLİYOR...";
+            btn.innerText = "DOĞRULANIYOR...";
             btn.disabled = true;
+            warning.classList.add('hidden');
 
             try {
-                // İstediğin koleksiyon: ayse, belge: admin
-                const docRef = window.fs.doc(window.db, "ayse", "admin");
-                const docSnap = await window.fs.getDoc(docRef);
+                // Kendi Vercel linkine istek atıyoruz
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sifre: passInput })
+                });
 
-                if (docSnap.exists() && docSnap.data().key === passInput) {
+                const data = await response.json();
+
+                if (response.ok && data.auth === true) {
                     document.getElementById('loginGate').style.display = 'none';
                     document.getElementById('adminContent').classList.remove('hidden-content');
                     loadData();
                 } else {
-                    alert('Hatalı veya yetkisiz şifre.');
+                    warning.classList.remove('hidden');
+                    btn.innerText = "GİRİŞ YAP";
+                    btn.disabled = false;
                 }
             } catch (error) {
                 console.error("Giriş hatası:", error);
-                alert('Bağlantı hatası oluştu.');
-            } finally {
+                alert('Vercel Sunucu Bağlantı Hatası!');
                 btn.innerText = "GİRİŞ YAP";
                 btn.disabled = false;
             }
         }
 
+        // --- Veri Yükleme ve Diğer Fonksiyonlar (Aynen Kalıyor) ---
         async function loadData() {
             if (!window.fs) { setTimeout(loadData, 200); return; }
             try {
@@ -140,26 +142,20 @@
                 products = [];
                 snap.forEach(d => products.push({ dbId: d.id, ...d.data() }));
                 render();
-            } catch (error) {
-                console.error("Veri çekme hatası:", error);
-            }
+            } catch (error) { console.error("Veri çekme hatası:", error); }
         }
 
         function render() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
-            
             products.forEach(p => {
                 const firstMedia = p.images?.[0] || p.image;
                 const isVideo = firstMedia && typeof firstMedia === 'object' && firstMedia.type === 'video';
                 const src = isVideo ? firstMedia.src : (firstMedia.src || firstMedia);
-
                 const div = document.createElement('div');
                 div.className = "glass-card p-4 relative group overflow-hidden transition hover:border-gold/30";
                 div.innerHTML = `
-                    <button onclick="deleteItem('${p.dbId}')" class="absolute top-2 right-2 z-10 w-8 h-8 bg-red-600/80 rounded-full text-white text-[10px] opacity-0 group-hover:opacity-100 transition shadow-lg">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <button onclick="deleteItem('${p.dbId}')" class="absolute top-2 right-2 z-10 w-8 h-8 bg-red-600/80 rounded-full text-white text-[10px] opacity-0 group-hover:opacity-100 transition shadow-lg"><i class="fas fa-trash"></i></button>
                     <div class="aspect-[3/4] mb-4 bg-black flex items-center justify-center overflow-hidden rounded-lg">
                         ${isVideo ? `<video src="${src}" class="w-full h-full object-cover" muted loop autoplay playsinline></video>` : `<img src="${src}" class="w-full h-full object-cover">`}
                     </div>
@@ -191,21 +187,10 @@
             const d = document.getElementById('newDesc').value;
             const c = document.getElementById('newCat').value;
             const btn = document.getElementById('saveBtn');
-
             if(!n || !d || tempMedia.length === 0) return alert('Boş alan bırakmayın.');
-            
             btn.innerText = "YÜKLENİYOR...";
             btn.disabled = true;
-
-            const p = { 
-                id: Date.now(), 
-                name: n, 
-                desc: d, 
-                category: c, 
-                images: tempMedia, 
-                image: tempMedia[0] 
-            };
-
+            const p = { id: Date.now(), name: n, desc: d, category: c, images: tempMedia, image: tempMedia[0] };
             try {
                 await window.fs.addDoc(window.fs.collection(window.db, "ayeli_products"), p);
                 tempMedia = [];
@@ -213,28 +198,22 @@
                 document.getElementById('newName').value = '';
                 document.getElementById('newDesc').value = '';
                 loadData();
-                alert('Model başarıyla eklendi.');
-            } catch (err) {
-                console.error(err);
-                alert('Hata oluştu. Dosya boyutları çok yüksek olabilir.');
-            } finally {
+                alert('Başarıyla kaydedildi.');
+            } catch (err) { alert('Hata oluştu.'); } finally {
                 btn.innerText = "VERİTABANINA KAYDET";
                 btn.disabled = false;
             }
         }
 
         async function deleteItem(dbId) {
-            if(confirm('Bu modeli kalıcı olarak silmek istediğine emin misin?')) {
+            if(confirm('Emin misiniz?')) {
                 try {
                     await window.fs.deleteDoc(window.fs.doc(window.db, "ayeli_products", dbId));
                     loadData();
-                } catch (error) {
-                    alert("Silme işlemi başarısız.");
-                }
+                } catch (error) { alert("Silinemedi."); }
             }
         }
 
-        // Global fonksiyon tanımları (onclick için gerekli)
         window.checkAdmin = checkAdmin;
         window.saveProduct = saveProduct;
         window.deleteItem = deleteItem;
