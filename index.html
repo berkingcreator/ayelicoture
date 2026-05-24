@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayeli Couture | Haute Couture & Bridal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/ayeli.png" sizes="512x512">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white">
+
+    <!-- NAVİGASYON -->
+    <nav class="fixed w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-[0.3em] luxury-font cursor-pointer">
+                AYELİ <span class="text-gold font-light">COUTURE</span>
+            </a>
+            <div class="hidden md:flex space-x-12">
+                <a href="index.html" class="text-[10px] font-bold tracking-[0.2em] uppercase text-gold">Anasayfa</a>
+                <a href="koleksiyon.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Koleksiyon</a>
+                <a href="iletisim.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">İletişim</a>
+            </div>
+            <div class="md:hidden" onclick="toggleMenu()">
+                <div id="navIcon" class="menu-icon"><span></span><span></span><span></span></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MOBİL MENÜ -->
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[90] flex flex-col items-center justify-center space-y-12 transition-transform duration-700 translate-x-full md:hidden">
+        <a href="index.html" class="text-2xl luxury-font tracking-[0.2em] text-gold">ANASAYFA</a>
+        <a href="koleksiyon.html" class="text-2xl luxury-font tracking-[0.2em]">KOLEKSİYON</a>
+        <a href="iletisim.html" class="text-2xl luxury-font tracking-[0.2em]">İLETİŞİM</a>
+        <div class="flex space-x-8 text-gold text-xl">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/905366614017"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </div>
+
+    <!-- ANASAYFA VİTRİN -->
+    <main class="min-h-screen flex items-center bg-white pt-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+            <div class="relative z-10 text-center md:text-left">
+                <h4 class="text-gold uppercase tracking-[0.4em] text-[10px] font-bold mb-6">Haute Couture & Bridal</h4>
+                <h1 class="text-6xl md:text-8xl luxury-font mb-10 leading-[1.1] text-black">Zarafet <br><span class="italic font-light">Sizinle Başlar.</span></h1>
+                <p class="text-gray-400 font-light text-sm max-w-sm mb-12 leading-relaxed">İstanbul'un kalbinde, her dikişinde bir hikaye barındıran tamamen size özel tasarımlar.</p>
+                <a href="koleksiyon.html" class="inline-block bg-black text-white px-12 py-5 text-[10px] font-bold tracking-widest uppercase hover:bg-gold transition duration-500 shadow-2xl">Koleksiyonu Keşfet</a>
+            </div>
+            <div class="relative h-[60vh] md:h-[80vh] w-full">
+                <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49.jpeg" class="w-full h-full object-cover rounded-sm shadow-sm grayscale-[0.2] hover:grayscale-0 transition duration-1000">
+            </div>
+        </div>
+    </main>
+    
+    <section class="py-32 bg-white px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+            <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49%20(1).jpeg" class="aspect-[3/4] object-cover w-full">
+            <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49%20(2).jpeg" class="aspect-[3/4] object-cover w-full md:mt-20">
+            <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/WhatsApp%20Image%202026-03-08%20at%2023.00.49.jpeg" class="aspect-[3/4] object-cover w-full">
+            <img src="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/b.jpeg" class="aspect-[3/4] object-cover w-full md:mt-20">
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#0a0a0a] text-white pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-24 border-b border-white/5 pb-24">
+            <div class="space-y-8">
+                <div class="text-2xl luxury-font tracking-[0.3em]">AYELİ <span class="text-gold font-light">COUTURE</span></div>
+                <p class="text-gray-500 text-sm font-light leading-relaxed max-w-xs">Her dikiş bir sanattır. Size özel en lüks kumaşlarla hayallerinizi dikiyoruz.</p>
+                <div class="flex space-x-8 text-xl text-gray-500">
+                    <a href="#" class="hover:text-gold transition"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/905366614017" class="hover:text-gold transition"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="md:ml-auto">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">Bölümler</h4>
+                <ul class="space-y-5 text-sm font-light text-gray-500">
+                    <li><a href="index.html" class="hover:text-gold transition">Anasayfa</a></li>
+                    <li><a href="koleksiyon.html" class="hover:text-gold transition">Koleksiyon</a></li>
+                    <li><a href="iletisim.html" class="hover:text-gold transition">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="md:ml-auto text-sm font-light text-gray-500 space-y-6">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">İletişim</h4>
+                <p>Ümraniye, İstanbul / Türkiye</p>
+                <p>+90 536 661 40 17</p>
+                <p>info@ayelicouture.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-16 flex justify-between items-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+            <p>© <script>document.write(new Date().getFullYear());</script> Ayeli Couture.</p>
+            <p>powered by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a></p>
+        </div>
+    </footer>
+
+    <script src="navbar.js"></script>
+</body>
+</html>

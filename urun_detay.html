@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Detayı | Ayeli Couture</title>
+    
+    <meta property="og:title" content="Ayeli Couture - Özel Tasarım">
+    <meta property="og:description" content="Koleksiyonumuzu inceleyin.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/berkingcreator/ayelicoture/main/ayeli.png">
+    <meta property="og:type" content="website">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white">
+
+    <nav class="w-full z-[100] bg-white border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-[0.3em] luxury-font cursor-pointer">
+                AYELİ <span class="text-gold font-light">COUTURE</span>
+            </a>
+            <a href="koleksiyon.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Koleksiyona Dön</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row gap-12" id="productContainer">
+        <div class="w-full text-center py-20 text-gray-400 font-light">Ürün yükleniyor...</div>
+    </main>
+
+    <footer class="bg-[#0a0a0a] text-white py-12 text-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+        <p>© <script>document.write(new Date().getFullYear());</script> Ayeli Couture. powered by YBG13™</p>
+    </footer>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script>
+        let autoSlideInterval = null;
+
+        async function fetchProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (!productId) {
+                document.getElementById('productContainer').innerHTML = "<h2 class='text-2xl font-light text-center w-full py-12'>Ürün bulunamadı.</h2>";
+                return;
+            }
+
+            if (!window.fs || !window.db) {
+                setTimeout(fetchProduct, 300);
+                return;
+            }
+
+            try {
+                const docRef = window.fs.doc(window.db, "ayeli_products", productId);
+                const docSnap = await window.fs.getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const p = docSnap.data();
+                    document.title = `${p.name} | Ayeli Couture`;
+
+                    const allMedia = p.images || [p.image];
+                    
+                    // HTML Şablonunu Oluştur
+                    document.getElementById('productContainer').innerHTML = `
+                        <div class="w-full md:w-1/2 relative bg-[#f9f9f9] min-h-[50vh] md:min-h-[70vh] flex flex-col justify-between">
+                            <div id="mediaViewer" class="w-full h-full"></div>
+                        </div>
+                        <div class="w-full md:w-1/2 flex flex-col justify-center">
+                            <span class="text-gold text-[9px] font-bold tracking-[0.4em] uppercase mb-6">${p.category}</span>
+                            <h1 class="text-5xl luxury-font mb-8 leading-tight">${p.name}</h1>
+                            <p class="text-gray-400 text-sm leading-relaxed mb-12 font-light">${p.desc || 'Bu eşsiz tasarım hakkında detaylı bilgi ve randevu almak için bizimle iletişime geçin.'}</p>
+                            
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <button onclick="window.open('https://wa.me/905366614017?text=${encodeURIComponent(p.name + ' tasarımı hakkında bilgi almak istiyorum.')}')" class="bg-[#25D366] flex-1 text-white py-5 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-black transition duration-700 shadow-lg">
+                                    <i class="fab fa-whatsapp mr-2"></i> WhatsApp İle Sor
+                                </button>
+                                <button onclick="copyLink()" class="bg-black flex-1 text-white py-5 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-gold transition duration-700">
+                                    <i class="fas fa-share-alt mr-2"></i> Ürünü Paylaş
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    const mediaViewer = document.getElementById('mediaViewer');
+                    let currentIndex = 0;
+
+                    const updateMedia = (index) => {
+                        if (!allMedia[index]) return;
+                        currentIndex = index;
+                        const m = allMedia[currentIndex];
+                        const isVideo = m && typeof m === 'object' && m.type === 'video';
+                        const src = isVideo ? m.src : (m.src || m);
+
+                        mediaViewer.innerHTML = `
+                            <div class="w-full h-[60vh] md:h-[75vh]">
+                                ${isVideo 
+                                    ? `<video src="${src}" class="w-full h-full object-cover animate-fadeIn" autoplay muted loop controls playsinline></video>`
+                                    : `<img src="${src}" class="w-full h-full object-cover animate-fadeIn">`
+                                }
+                            </div>
+                            <div id="thumbsContainer" class="absolute bottom-0 w-full p-4 flex gap-3 overflow-x-auto bg-white/20 backdrop-blur-md custom-scrollbar"></div>
+                        `;
+
+                        // Küçük resimleri (Thumbnails) yeniden oluştur
+                        const thumbsContainer = document.getElementById('thumbsContainer');
+                        allMedia.forEach((mediaItem, i) => {
+                            const isV = mediaItem && typeof mediaItem === 'object' && mediaItem.type === 'video';
+                            const tSrc = isV ? mediaItem.src : (mediaItem.src || mediaItem);
+                            const thumb = document.createElement(isV ? 'video' : 'img');
+                            thumb.src = tSrc;
+                            const activeClass = i === currentIndex ? "border-gold opacity-100 scale-105" : "border-transparent opacity-50";
+                            thumb.className = `w-14 h-14 object-cover cursor-pointer border-2 transition-all duration-500 shrink-0 ${activeClass}`;
+                            
+                            thumb.onclick = (e) => {
+                                e.stopPropagation();
+                                if (autoSlideInterval) clearInterval(autoSlideInterval);
+                                updateMedia(i);
+                            };
+                            thumbsContainer.appendChild(thumb);
+                        });
+                    };
+
+                    // Birden fazla görsel varsa 2.5 saniyede bir otomatik kaydır
+                    if (allMedia.length > 1) {
+                        autoSlideInterval = setInterval(() => {
+                            currentIndex = (currentIndex + 1) % allMedia.length;
+                            updateMedia(currentIndex);
+                        }, 2500);
+                    }
+
+                    updateMedia(0);
+
+                } else {
+                    document.getElementById('productContainer').innerHTML = "<h2 class='text-2xl font-light text-center w-full py-12'>Ürün bulunamadı veya silinmiş.</h2>";
+                }
+            } catch (error) {
+                console.error("Hata:", error);
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Ürün bağlantısı kopyalandı! Artık WhatsApp veya sosyal medyada paylaşabilirsiniz.");
+        }
+
+        window.onload = fetchProduct;
+    </script>
+</body>
+</html>

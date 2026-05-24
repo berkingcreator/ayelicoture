@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim | Ayeli Couture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white">
+
+    <!-- NAVİGASYON -->
+    <nav class="fixed w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-[0.3em] luxury-font cursor-pointer">
+                AYELİ <span class="text-gold font-light">COUTURE</span>
+            </a>
+            <div class="hidden md:flex space-x-12">
+                <a href="index.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Anasayfa</a>
+                <a href="koleksiyon.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Koleksiyon</a>
+                <a href="iletisim.html" class="text-[10px] font-bold tracking-[0.2em] uppercase text-gold">İletişim</a>
+            </div>
+            <div class="md:hidden" onclick="toggleMenu()">
+                <div id="navIcon" class="menu-icon"><span></span><span></span><span></span></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- İLETİŞİM SECTION -->
+    <main class="pt-40 pb-32">
+        <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-24">
+            <div>
+                <h2 class="text-6xl luxury-font italic mb-12">Atölyemiz</h2>
+                <div class="space-y-10 text-sm font-light leading-relaxed">
+                    <p class="flex items-start"><i class="fas fa-map-marker-alt text-gold mt-1 mr-6"></i> Atatürk, Cevherağa Cami Sk. No:8 D:4, <br>Ümraniye/İstanbul</p>
+                    <p class="flex items-center"><i class="fas fa-phone text-gold mr-6"></i> +90 536 661 40 17</p>
+                    <p class="flex items-center"><i class="fab fa-instagram text-gold mr-6"></i> @ayeli.couture</p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <input type="text" id="cName" placeholder="Adınız Soyadınız" class="w-full p-5 border-b border-gray-100 outline-none focus:border-gold text-sm font-light">
+                <textarea id="cMsg" placeholder="Düşlediğiniz tasarım hakkında bize yazın..." class="w-full p-5 border-b border-gray-100 outline-none focus:border-gold h-40 text-sm font-light"></textarea>
+                <button onclick="sendWA()" class="w-full bg-[#25D366] text-white py-5 font-bold uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-black transition duration-500">WhatsApp Randevu</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#0a0a0a] text-white pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-6 pt-16 flex justify-between items-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+            <p>© <script>document.write(new Date().getFullYear());</script> Ayeli Couture.</p>
+            <p>powered by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a></p>
+        </div>
+    </footer>
+
+    <script src="navbar.js"></script>
+    <script>
+        function sendWA() {
+            const name = document.getElementById('cName').value;
+            const msg = document.getElementById('cMsg').value;
+            if(!name || !msg) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            const text = `Merhaba, ben ${name}. Tasarım hakkında: ${msg}`;
+            window.open(`https://wa.me/905366614017?text=${encodeURIComponent(text)}`);
+        }
+    </script>
+</body>
+</html>

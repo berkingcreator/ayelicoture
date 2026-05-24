@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksiyon | Ayeli Couture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white">
+
+    <!-- NAVİGASYON -->
+    <nav class="fixed w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-50">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold tracking-[0.3em] luxury-font cursor-pointer">
+                AYELİ <span class="text-gold font-light">COUTURE</span>
+            </a>
+            <div class="hidden md:flex space-x-12">
+                <a href="index.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">Anasayfa</a>
+                <a href="koleksiyon.html" class="text-[10px] font-bold tracking-[0.2em] uppercase text-gold">Koleksiyon</a>
+                <a href="iletisim.html" class="text-[10px] font-bold tracking-[0.2em] uppercase hover:text-gold transition-colors">İletişim</a>
+            </div>
+            <div class="md:hidden" onclick="toggleMenu()">
+                <div id="navIcon" class="menu-icon"><span></span><span></span><span></span></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MOBİL MENÜ -->
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[90] flex flex-col items-center justify-center space-y-12 transition-transform duration-700 translate-x-full md:hidden">
+        <a href="index.html" class="text-2xl luxury-font tracking-[0.2em]">ANASAYFA</a>
+        <a href="koleksiyon.html" class="text-2xl luxury-font tracking-[0.2em] text-gold">KOLEKSİYON</a>
+        <a href="iletisim.html" class="text-2xl luxury-font tracking-[0.2em]">İLETİŞİM</a>
+    </div>
+
+    <!-- KOLEKSİYON İÇERİK -->
+    <main class="pt-40 pb-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24">
+                <h2 class="text-5xl luxury-font italic">Tasarımlarımız</h2>
+                <div class="flex justify-center gap-8 mt-12">
+                    <button onclick="filterItems('all')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-gold pb-2">Hepsi</button>
+                    <button onclick="filterItems('satilik')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-transparent text-gray-300 hover:text-black pb-2">Satılık</button>
+                    <button onclick="filterItems('kiralik')" class="text-[9px] font-bold tracking-[0.2em] uppercase border-b border-transparent text-gray-300 hover:text-black pb-2">Kiralık</button>
+                </div>
+            </div>
+            
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+                <div class="col-span-full text-center text-gray-400 py-12 font-light">Modeller yükleniyor...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#0a0a0a] text-white pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-24 border-b border-white/5 pb-24">
+            <div class="space-y-8">
+                <div class="text-2xl luxury-font tracking-[0.3em]">AYELİ <span class="text-gold font-light">COUTURE</span></div>
+                <p class="text-gray-500 text-sm font-light leading-relaxed max-w-xs">Her dikiş bir sanattır. Size özel en lüks kumaşlarla hayallerinizi dikiyoruz.</p>
+            </div>
+            <div class="md:ml-auto">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">Bölümler</h4>
+                <ul class="space-y-5 text-sm font-light text-gray-500">
+                    <li><a href="index.html" class="hover:text-gold transition">Anasayfa</a></li>
+                    <li><a href="koleksiyon.html" class="hover:text-gold transition">Koleksiyon</a></li>
+                    <li><a href="iletisim.html" class="hover:text-gold transition">İletişim</a></li>
+                </ul>
+            </div>
+            <div class="md:ml-auto text-sm font-light text-gray-500 space-y-6">
+                <h4 class="text-white uppercase text-[10px] font-bold tracking-[0.4em] mb-10">İletişim</h4>
+                <p>Ümraniye, İstanbul / Türkiye</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 pt-16 flex justify-between items-center text-[9px] tracking-[0.3em] text-gray-600 uppercase">
+            <p>© <script>document.write(new Date().getFullYear());</script> Ayeli Couture.</p>
+            <p>powered by <a href="#" class="text-gray-400 hover:text-gold">YBG13™</a></p>
+        </div>
+    </footer>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script src="navbar.js"></script>
+    <script src="koleksiyon.js"></script>
+</body>
+</html>
